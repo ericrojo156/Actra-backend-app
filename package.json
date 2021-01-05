@@ -1,0 +1,34 @@
+{
+  "name": "actra",
+  "version": "1.0.0",
+  "description": "Time management application",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "clean": "rimraf artifacts",
+    "tsc": "tsc",
+    "build": "npm run clean && npm run tsc",
+    "test": "tsc && mocha -r ts-node/register ./tests/*.test.ts",
+    "coverage": "nyc -r lcov -e .ts -x \"*.test.ts\" npm run test"
+  },
+  "author": "Eric Rojo",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/chai": "^4.2.14",
+    "@types/mocha": "^8.0.3",
+    "@types/node": "^14.14.10",
+    "chai": "^4.2.0",
+    "mocha": "^8.2.0",
+    "nyc": "^15.1.0",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.5"
+  },
+  "dependencies": {
+    "uuid": "~8.3.1",
+    "rmfr": "~2.0.0",
+    "express": "^4.17.1",
+    "async-mutex": "0.2.4"
+  }
+}
