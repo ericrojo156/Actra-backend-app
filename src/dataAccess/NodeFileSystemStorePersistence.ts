@@ -2,7 +2,7 @@ import { ILogger, Logger } from "../Logger";
 import { IStorePersistence } from "./IStorePersistence";
 const fs = require("fs");
 
-export class FileSystemStorePersistence implements IStorePersistence {
+export class NodeFileSystemStorePersistence implements IStorePersistence {
     private logger: Logger;
     private persistenceDir: string;
     private storeFilename: string;

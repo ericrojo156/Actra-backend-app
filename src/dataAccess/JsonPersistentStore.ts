@@ -9,7 +9,7 @@ import { ITrackablesStore } from "./ITrackablesStore";
 import { TrackablesStore } from "./TrackablesStore";
 import { v4 as uuidv4 } from "uuid";
 import { IStorePersistence } from "./IStorePersistence";
-import { FileSystemStorePersistence } from "./FileSystemStorePersistence";
+import { NodeFileSystemStorePersistence } from "./NodeFileSystemStorePersistence";
 import { TimeFormat, TimeObject } from "../trackable/TimeObject";
 import { TrackingInterval } from "../trackable/TrackingInterval";
 import {Mutex} from 'async-mutex';
@@ -50,7 +50,7 @@ export class JsonPersistentStore implements IPersistentAndSerializableStore {
     store: ITrackablesStore;
     deserializer: IDeserializer;
     persistenceLayer: IStorePersistence;
-    constructor(persistenceLayer: IStorePersistence = new FileSystemStorePersistence(), deserializer: IDeserializer = new JSONStoreDeserializer()) {
+    constructor(persistenceLayer: IStorePersistence = new NodeFileSystemStorePersistence(), deserializer: IDeserializer = new JSONStoreDeserializer()) {
         this.mutex = new Mutex();
         this.logger = new Logger();
         this.deserializer = deserializer;
