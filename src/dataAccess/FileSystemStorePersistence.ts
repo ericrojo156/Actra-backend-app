@@ -3,15 +3,15 @@ import { IStorePersistence } from "./IStorePersistence";
 const fs = require("fs");
 
 export class FileSystemStorePersistence implements IStorePersistence {
-    logger: Logger;
-    persistenceDir: string;
-    storeFilename: string;
+    private logger: Logger;
+    private persistenceDir: string;
+    private storeFilename: string;
     constructor(persistenceDir = "appData", storeFilename = "store.json", logger: ILogger = new Logger()) {
         this.persistenceDir = persistenceDir;
         this.storeFilename = storeFilename;
         this.logger = logger;
     }
-    getFilePath(): string {
+    private getFilePath(): string {
         return this.persistenceDir + "/" + this.storeFilename;
     }
     private createStorePathIfNotExists(): Promise<any> {
