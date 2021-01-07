@@ -205,9 +205,7 @@ export class TrackableController {
         return this.store.getId();
     }
     toTrackableObject(trackable: ITrackable): Object {
-        return JSON.parse(
-            this.serializeTrackable(trackable)
-        );
+        return trackable.toObject();
     }
     getTrackablesIdsWithinTimeSpan(timeSpan: Object): Object[] {
         if (typeof(timeSpan) !== 'object' || timeSpan === null) {
