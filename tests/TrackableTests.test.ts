@@ -12,7 +12,7 @@ import { JsonPersistentStore, JSONStoreDeserializer } from "../src/dataAccess/Js
 import {v4 as uuidv4} from "uuid";
 import { ITrackablesStore } from "../src/dataAccess/ITrackablesStore";
 import * as fs from "fs";
-import { NodeFileSystemStorePersistence } from "../src/dataAccess/NodeFileSystemStorePersistence";
+import { FileSystemStorePersistence } from "../src/dataAccess/FileSystemStorePersistence";
 import { IPersistentStore } from "../src/dataAccess/IPersistentStore";
 import { NoLogger } from "../src/Logger";
 import { StorePersistenceMock } from "./StorePersistenceMock";
@@ -828,7 +828,7 @@ describe("Store", function() {
     beforeEach(async function() {  
         await fs.promises.access(testDataDir).then(() => rmfr(testDataDir)).catch(() => {});
         await fs.promises.mkdir(testDataDir);
-        store = new JsonPersistentStore(new NodeFileSystemStorePersistence("testDataDir", "store.json"));
+        store = new JsonPersistentStore(new FileSystemStorePersistence("testDataDir", "store.json"));
         controller = new TrackableController(store, new NoLogger());
         let art = controller.createAndReturnProject("art");
         let sketching = controller.createAndReturnActivity("sketching");
@@ -858,7 +858,7 @@ describe("Store", function() {
         await store.save();
         let storeFileIsAccessible: boolean = await fs.promises.access(`./${testDataDir}/store.json`).then(() => true).catch(() => false);
         assert(storeFileIsAccessible);
-        let loadedStore: IPersistentStore = new JsonPersistentStore(new NodeFileSystemStorePersistence(testDataDir, "store.json"));
+        let loadedStore: IPersistentStore = new JsonPersistentStore(new FileSystemStorePersistence(testDataDir, "store.json"));
         assert(loadedStore.getAllTrackableIds().length === 0);
         await loadedStore.load();
         storesAreEqual(store, loadedStore);
@@ -868,7 +868,7 @@ describe("Store", function() {
         controller.startTrackable(activity1Id);
         assert(store.getCurrentlyActiveTrackableId() === activity1Id);
         await store.save();
-        let loadedStore: IPersistentStore = new JsonPersistentStore(new NodeFileSystemStorePersistence(testDataDir, "store.json"));
+        let loadedStore: IPersistentStore = new JsonPersistentStore(new FileSystemStorePersistence(testDataDir, "store.json"));
         await loadedStore.load();
         assert(loadedStore.getCurrentlyActiveTrackableId() === activity1Id);
         controller.stopTrackable(activity1Id);
