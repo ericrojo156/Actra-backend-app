@@ -9,8 +9,9 @@ import { TimeFormat, TimeObject } from "./trackable/TimeObject";
 import { TrackingInterval, IntervalProps } from "./trackable/TrackingInterval";
 import { RGBColor } from "./trackable/RGBColor";
 import { TrackingState } from "./trackable/TrackingState";
+import ITrackableController from "./ITrackableController";
 
-export class TrackableController {
+export class TrackableController implements ITrackableController{
     store: IPersistentAndSerializableStore;
     logger: ILogger;
     currentlyActiveTrackableId: uuidv4;
