@@ -10,6 +10,7 @@ import { TrackingInterval, IntervalProps } from "./trackable/TrackingInterval";
 import { RGBColor } from "./trackable/RGBColor";
 import { TrackingState } from "./trackable/TrackingState";
 import ITrackableController from "./ITrackableController";
+import {Activity as ActivityActraAPI} from "./api/ActraAPI";
 
 export class TrackableController implements ITrackableController{
     store: IPersistentAndSerializableStore;
@@ -19,6 +20,15 @@ export class TrackableController implements ITrackableController{
         this.store = store;
         this.logger = logger;
         this.setCurrentlyActiveTrackableId(this.store.getCurrentlyActiveTrackableId());
+    }
+    public async getActivity(id: uuidv4): Promise<ActivityActraAPI> {
+        const activity: Activity = this.store.getActivities().get(id);
+        return {
+            id: activity.getId(),
+            name: activity.getName(),
+            color: activity.getColor(),
+            trackingHistory: activity.getTrackingHistory().map(interval => interval.id)
+        };
     }
     public getCurrentlyActiveTrackableId() {
         if (typeof(this.currentlyActiveTrackableId) === 'undefined') {
