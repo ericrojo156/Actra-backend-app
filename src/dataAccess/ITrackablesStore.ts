@@ -4,11 +4,13 @@ import {v4 as uuidv4} from "uuid";
 import { ITrackable } from "../trackable/ITrackable";
 import { TimeFormat, TimeObject } from "../trackable/TimeObject";
 import { TrackingInterval } from "../trackable/TrackingInterval";
+import { TrackingIntervalAPI } from "../api/ActraAPI";
 
 export interface ITrackablesStore {
     getAllTrackingIntervals(): Array<TrackingInterval>;
     setTrackingHistory(trackableId: uuidv4, trackingIntervals: TrackingInterval[]): void;
     getIntervalsToTrackables(): Object[];
+    getTrackingIntervals(): TrackingIntervalAPI[];
     getTrackingInterval(id: uuidv4): TrackingInterval;
     addTrackingInterval(trackingInterval: TrackingInterval, trackableId: uuidv4): void;
     getCorrespondingTrackableOfInterval(intervalId: uuidv4): uuidv4;

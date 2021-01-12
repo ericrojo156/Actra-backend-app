@@ -1,3 +1,4 @@
+import { TimeObjectAPI } from "../api/ActraAPI";
 
 export enum TimeFormat {
     HMS, MS, S
@@ -83,7 +84,7 @@ export class TimeObject {
             return new TimeObject();
         }
     }
-    toObject(): Object {
+    toObject(): TimeObjectAPI {
         return {
             seconds: this.seconds,
             mins: this.mins,

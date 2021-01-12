@@ -1,6 +1,7 @@
 import {TrackingState} from "./TrackingState";
 import {TimeObject, TimeFormat} from "./TimeObject";
 import {v4 as uuidv4} from "uuid";
+import { TrackingIntervalAPI } from "../api/ActraAPI";
 
 export interface IntervalProps {
     startTimeSeconds: number,
@@ -59,7 +60,7 @@ export class TrackingInterval {
             && this.endTimeSeconds === other.endTimeSeconds
             && this.state === other.state;
     }
-    toObject(): Object {
+    toObject(): TrackingIntervalAPI {
         return {
             id: this.getId(),
             startTimeSeconds: this.startTimeSeconds,
