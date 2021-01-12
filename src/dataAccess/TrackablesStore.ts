@@ -210,8 +210,8 @@ export class TrackablesStore implements ITrackablesStore {
     getTotalTrackedTime(id: uuidv4, overTimeSpan: Object, format: TimeFormat): TimeObject {
         return this.getTrackableById(id).getTotalTrackedTime(format, overTimeSpan);
     }
-    getTrackingIntervals(): TrackingIntervalAPI[] {
-        return [...this.trackingIntervals.values()].map((interval: TrackingInterval) => interval.toObject());
+    getTrackingIntervals(trackableId: uuidv4): TrackingIntervalAPI[] {
+        return this.getTrackableById(trackableId).getTrackingHistory().map((interval: TrackingInterval) => interval.toObject());
     }
     toObject(): Object {
         return {
