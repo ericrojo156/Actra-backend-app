@@ -151,4 +151,7 @@ export class Project implements ITrackable {
     static copy(project: Project): Project {
         return Project.fromObject(project.getStore(), project.toObject());
     }
+    getType(): string {
+        return "project";
+    }
 }

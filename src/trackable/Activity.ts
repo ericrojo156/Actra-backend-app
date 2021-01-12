@@ -192,4 +192,7 @@ export class Activity implements ITrackable {
     static copy(activity: Activity): Activity {
         return Activity.fromObject(activity.getStore(), activity.toObject());
     }
+    getType(): string {
+        return "activity";
+    }
 }

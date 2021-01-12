@@ -1,4 +1,4 @@
-import { TrackingIntervalAPI } from "./api/ActraAPI";
+import { TrackableAPI, TrackingIntervalAPI } from "./api/ActraAPI";
 import {v4 as uuidv4} from 'uuid';
 
 export default interface ITrackableController {
@@ -38,4 +38,5 @@ export default interface ITrackableController {
     convertActivityToProject(id);
     convertProjectToActivity(id);
     setTrackingHistory(trackableId, intervals);
+    getProjectTrackables(id: uuidv4): TrackableAPI[];
 }

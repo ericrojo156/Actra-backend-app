@@ -52,6 +52,15 @@ export interface TrackingIntervalAPI {
     duration: TimeObjectAPI
 }
 
+export interface TrackableAPI {
+    id: string,
+    type: string,
+    name: string,
+    color: RGBColor | null,
+    trackablesIds: Set<string>[] | undefined,
+    trackingHistory: Set<string>[] | undefined
+}
+
 export interface ActraAPI {
     storeObject();
     currentlyActive(): Promise<string>;
@@ -77,5 +86,5 @@ export interface ActraAPI {
     setCurrentIntervalTime(trackableId: string, timeObject: TimeJSObject);
     convertActivityToProject(trackableId: string);
     convertProjectToActivity(trackableId: string);
-    activity(id: string): Promise<Activity>;
+    projectTrackables(projectId): TrackableAPI;
 }

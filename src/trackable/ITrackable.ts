@@ -37,4 +37,5 @@ export interface ITrackable extends ITracker, IObservable {
     getTotalTrackedTime(format: TimeFormat, overTimeSpan: Object): TimeObject;
     setTrackingHistory(trackingHistory: TrackingInterval[]);
     toObject(): Object;
+    getType(): string;
 }
