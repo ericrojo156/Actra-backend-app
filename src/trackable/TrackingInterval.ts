@@ -64,7 +64,8 @@ export class TrackingInterval {
             id: this.getId(),
             startTimeSeconds: this.startTimeSeconds,
             endTimeSeconds: this.endTimeSeconds,
-            state: this.state === TrackingState.ACTIVE || this.state === 1 ? "ACTIVE" : "INACTIVE"
+            state: this.state === TrackingState.ACTIVE || this.state === 1 ? "ACTIVE" : "INACTIVE",
+            duration: this.toTimeObject().toObject()
         };
     }
 }

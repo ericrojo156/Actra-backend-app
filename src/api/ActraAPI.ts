@@ -38,18 +38,25 @@ export enum TrackerState {
     ACTIVE
 }
 
+export interface TimeObject {
+    hours: number,
+    mins: number,
+    seconds: number
+}
+
 export interface TrackingInterval {
     id: string,
     startTimeSeconds: number,
     endTimeSeconds: number,
-    state: TrackerState
+    state: TrackerState,
+    duration: TimeObject
 }
 
 export interface ActraAPI {
     storeObject();
     currentlyActive(): Promise<string>;
     trackables(timeSpan: TimeSpan);
-    activityIntervals(activityId: string): Promise<TrackingInterval>;
+    activityIntervals(activityId: string): Promise<TrackingInterval[]>;
     activities();
     projects();
     totalTrackedTime(trackableId: string, overTimeSpan: TimeSpan);
