@@ -13,6 +13,7 @@ import { FileSystemStorePersistence } from "./FileSystemStorePersistence";
 import { TimeFormat, TimeObject } from "../trackable/TimeObject";
 import { TrackingInterval } from "../trackable/TrackingInterval";
 import {Mutex} from 'async-mutex';
+import { TrackingIntervalAPI } from "../api/ActraAPI";
 
 const latestStoreVersion: string = "v.0.3";
 const jsonPeristentStore: string = "JsonPersistentStore";
@@ -56,6 +57,9 @@ export class JsonPersistentStore implements IPersistentAndSerializableStore {
         this.deserializer = deserializer;
         this.store = new TrackablesStore(latestStoreVersion, jsonPeristentStore);
         this.persistenceLayer = persistenceLayer;
+    }
+    getTrackingIntervals(trackableId: uuidv4): TrackingIntervalAPI[] {
+        return this.store.getTrackingIntervals(trackableId);
     }
     getCurrentlyActiveTrackableId() {
         return this.store.getCurrentlyActiveTrackableId();

@@ -10,7 +10,7 @@ export interface ITrackablesStore {
     getAllTrackingIntervals(): Array<TrackingInterval>;
     setTrackingHistory(trackableId: uuidv4, trackingIntervals: TrackingInterval[]): void;
     getIntervalsToTrackables(): Object[];
-    getTrackingIntervals(): TrackingIntervalAPI[];
+    getTrackingIntervals(trackableId: uuidv4): TrackingIntervalAPI[];
     getTrackingInterval(id: uuidv4): TrackingInterval;
     addTrackingInterval(trackingInterval: TrackingInterval, trackableId: uuidv4): void;
     getCorrespondingTrackableOfInterval(intervalId: uuidv4): uuidv4;
