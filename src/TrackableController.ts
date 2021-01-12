@@ -10,7 +10,7 @@ import { TrackingInterval, IntervalProps } from "./trackable/TrackingInterval";
 import { RGBColor } from "./trackable/RGBColor";
 import { TrackingState } from "./trackable/TrackingState";
 import ITrackableController from "./ITrackableController";
-import {Activity as ActivityActraAPI} from "./api/ActraAPI";
+import {Activity as ActivityActraAPI, TrackingIntervalAPI} from "./api/ActraAPI";
 
 export class TrackableController implements ITrackableController{
     store: IPersistentAndSerializableStore;
@@ -29,6 +29,9 @@ export class TrackableController implements ITrackableController{
             color: activity.getColor(),
             trackingHistory: activity.getTrackingHistory().map(interval => interval.id)
         };
+    }
+    public getTrackingIntervals(trackableId): TrackingIntervalAPI[] {
+        return this.store.getTrackingIntervals(trackableId);
     }
     public getCurrentlyActiveTrackableId() {
         if (typeof(this.currentlyActiveTrackableId) === 'undefined') {

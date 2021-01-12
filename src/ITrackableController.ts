@@ -1,4 +1,8 @@
+import { TrackingIntervalAPI } from "./api/ActraAPI";
+import {v4 as uuidv4} from 'uuid';
+
 export default interface ITrackableController {
+    getTrackingIntervals(trackableId: uuidv4): TrackingIntervalAPI[];
     getCurrentlyActiveTrackableId();
     setCurrentlyActiveTrackableId(trackableId);
     removeTrackablesFromProject(projectId, trackablesIds);
