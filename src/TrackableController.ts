@@ -12,11 +12,13 @@ import { TrackingState } from "./trackable/TrackingState";
 import ITrackableController from "./ITrackableController";
 import {Activity as ActivityActraAPI, TrackableAPI, TrackingIntervalAPI} from "./api/ActraAPI";
 
-export class TrackableController implements ITrackableController{
+export class TrackableController implements ITrackableController {
     store: IPersistentAndSerializableStore;
     logger: ILogger;
     currentlyActiveTrackableId: uuidv4;
+    storeIsLoaded: boolean;
     constructor(store: IPersistentAndSerializableStore, logger: ILogger = new Logger()) {
+        this.storeIsLoaded = false;
         this.store = store;
         this.logger = logger;
         this.setCurrentlyActiveTrackableId(this.store.getCurrentlyActiveTrackableId());
@@ -151,7 +153,9 @@ export class TrackableController implements ITrackableController{
         return this.store.save();
     }
     async loadStore(): Promise<boolean> {
-        return this.store.load();
+        const result = await this.store.load();
+        this.storeIsLoaded = true;
+        return result;
     }
     serializeStore(): string {
         return this.store.serialize();

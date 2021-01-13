@@ -86,5 +86,5 @@ export interface ActraAPI {
     setCurrentIntervalTime(trackableId: string, timeObject: TimeJSObject);
     convertActivityToProject(trackableId: string);
     convertProjectToActivity(trackableId: string);
-    projectTrackables(projectId): TrackableAPI;
+    projectTrackables(projectId: string): Promise<TrackableAPI[]>;
 }
