@@ -62,6 +62,7 @@ export interface TrackableAPI {
 }
 
 export interface ActraAPI {
+    storeIsLoaded(): boolean;
     storeObject();
     currentlyActive(): Promise<string>;
     trackables(timeSpan: TimeSpan);
