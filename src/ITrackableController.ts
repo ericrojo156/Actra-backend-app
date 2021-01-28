@@ -1,9 +1,9 @@
-import { AnalyzedTrackableAPI, TrackableAPI, TrackingIntervalAPI } from "./api/ActraAPI";
+import { AnalyzedTrackableAPI, TimeSpan, TrackableAPI, TrackingIntervalAPI } from "./api/ActraAPI";
 import {v4 as uuidv4} from 'uuid';
 
 export default interface ITrackableController {
     storeIsLoaded: boolean;
-    getAnalyzedTrackablesWithinTimeSpan(timeSpan): AnalyzedTrackableAPI[];
+    getAnalyzedTrackablesWithinTimeSpan(timeSpan: TimeSpan): Promise<AnalyzedTrackableAPI[]>;
     getTrackingIntervals(trackableId: uuidv4): TrackingIntervalAPI[];
     getCurrentlyActiveTrackableId();
     setCurrentlyActiveTrackableId(trackableId);
