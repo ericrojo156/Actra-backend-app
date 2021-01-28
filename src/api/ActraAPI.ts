@@ -57,8 +57,16 @@ export interface TrackableAPI {
     type: string,
     name: string,
     color: RGBColor | null,
-    trackablesIds: Set<string>[] | undefined,
-    trackingHistory: Set<string>[] | undefined
+    trackablesIds: string[] | undefined,
+    trackingHistory: string[] | undefined
+}
+
+export interface AnalyzedTrackableAPI {
+    name: string,
+    trackedTime: TimeObjectAPI,
+    percentOfTotalTime: number | null,
+    visibleInChart: boolean,
+    displayColor: RGBColor | null
 }
 
 export interface ActraAPI {

@@ -10,7 +10,7 @@ import { TrackingInterval, IntervalProps } from "./trackable/TrackingInterval";
 import { RGBColor } from "./trackable/RGBColor";
 import { TrackingState } from "./trackable/TrackingState";
 import ITrackableController from "./ITrackableController";
-import {Activity as ActivityActraAPI, TrackableAPI, TrackingIntervalAPI} from "./api/ActraAPI";
+import {Activity as ActivityActraAPI, AnalyzedTrackableAPI, TimeSpan, TrackableAPI, TrackingIntervalAPI} from "./api/ActraAPI";
 
 export class TrackableController implements ITrackableController {
     store: IPersistentAndSerializableStore;
@@ -22,6 +22,38 @@ export class TrackableController implements ITrackableController {
         this.store = store;
         this.logger = logger;
         this.setCurrentlyActiveTrackableId(this.store.getCurrentlyActiveTrackableId());
+    }
+    private analyzeTrackables(trackables: TrackableAPI[], timeSpan: TimeSpan, totalTrackedTimeSeconds: number): AnalyzedTrackableAPI[] {
+        return trackables.map(trackable => {
+            const trackedTimeObject = this.store.getTotalTrackedTime(trackable.id, timeSpan, TimeFormat.S);
+            return {
+                name: trackable.name,
+                trackedTime: {hours: trackedTimeObject.getHours(), mins: trackedTimeObject.getMins(), seconds: trackedTimeObject.getSeconds()},
+                percentOfTotalTime: 100 * (trackedTimeObject.getTotalSeconds() / totalTrackedTimeSeconds),
+                visibleInChart: true,
+                displayColor: trackable.color
+            }
+        });
+    }
+    async getAnalyzedTrackablesWithinTimeSpan(timeSpan: TimeSpan): Promise<AnalyzedTrackableAPI[]> {
+        const activities = await this.store.getActivities();
+        const projects = await this.store.getProjects();
+        let totalTimeSeconds = 0;
+        const trackables: TrackableAPI[] = [...activities.values(), ...projects.values()]
+            .map(trackable => {
+                totalTimeSeconds += this.store.getTotalTrackedTime(trackable.getId(), timeSpan, TimeFormat.S).getTotalSeconds();
+                return {
+                    id: trackable.getId(),
+                    type: trackable.getType(),
+                    name: trackable.getName(),
+                    color: trackable.getColor(),
+                    trackablesIds: trackable.getTrackingHistory().map(interval => interval.getId()),
+                    trackingHistory: trackable.getTrackingHistory().map(interval => interval.getId())
+                }
+            }
+        );
+        const analyzedTrackables = this.analyzeTrackables(trackables, timeSpan, totalTimeSeconds);
+        return analyzedTrackables;
     }
     public async getActivity(id: uuidv4): Promise<ActivityActraAPI> {
         const activity: Activity = this.store.getActivities().get(id);
