@@ -35,9 +35,9 @@ export class TrackableController implements ITrackableController {
             }
         });
     }
-    async getAnalyzedTrackablesWithinTimeSpan(timeSpan: TimeSpan): Promise<AnalyzedTrackableAPI[]> {
-        const activities = await this.store.getActivities();
-        const projects = await this.store.getProjects();
+    getAnalyzedTrackablesWithinTimeSpan(timeSpan: TimeSpan): AnalyzedTrackableAPI[] {
+        const activities = this.store.getActivities();
+        const projects = this.store.getProjects();
         let totalTimeSeconds = 0;
         const trackables: TrackableAPI[] = [...activities.values(), ...projects.values()]
             .map(trackable => {
