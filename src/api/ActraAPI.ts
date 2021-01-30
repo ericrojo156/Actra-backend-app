@@ -96,4 +96,5 @@ export interface ActraAPI {
     convertActivityToProject(trackableId: string);
     convertProjectToActivity(trackableId: string);
     projectTrackables(projectId: string): Promise<TrackableAPI[]>;
+    getAnalyzedTrackablesWithinTimeSpan(timeSpan: TimeSpan): AnalyzedTrackableAPI[];
 }

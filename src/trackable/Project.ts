@@ -14,6 +14,9 @@ export class Project implements ITrackable {
         this.projectActivity = new Activity(store, name, color, id);
         this.trackables = new Set();
     }
+    getTrackablesIds(): uuidv4[] {
+        return [...this.trackables.values()];
+    }
     deleteInterval(intervalId: number): void {
         this.projectActivity.deleteInterval(intervalId);
     }

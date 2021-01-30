@@ -23,6 +23,9 @@ export class Activity implements ITrackable {
         this.observers = new Set();
         this.currentInterval = null;
     }
+    getTrackingHistoryIds(): uuidv4[] {
+        return [...this.trackingHistory.values()]
+    }
     setCurrentInterval(id: uuidv4): void {
         this.currentInterval = id;
     }

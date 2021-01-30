@@ -35,6 +35,54 @@ export class TrackableController implements ITrackableController {
             }
         });
     }
+    getTrackablesIdsWithinTimeSpan(timeSpan: Object): TrackableAPI[] {
+        if (typeof(timeSpan) !== 'object' || timeSpan === null) {
+            return this.store.getAllTrackableIds().map((id: uuidv4) => {
+                const trackable = this.store.getTrackableById(id);
+                return {
+                    id: trackable.getId(),
+                    name: trackable.getName(),
+                    color: trackable.getColor(),
+                    type: trackable.getType(),
+                    trackablesIds: trackable.getType().toLowerCase() === 'project' ? (trackable as Project).getTrackablesIds() : [],
+                    trackingHistory: trackable.getType().toLowerCase() === 'activity' ? (trackable as Activity).getTrackingHistoryIds() : []
+                }
+            });
+        }
+        let sinceSeconds = (typeof(timeSpan['since']) === 'undefined') || timeSpan['since'] === null ? 0 : (Date.now() / 1000) - TimeObject.fromObject(timeSpan['since']).getTotalSeconds();
+        let untilSeconds = (typeof(timeSpan['until']) === 'undefined') || timeSpan['until'] === null ? ((Date.now() / 1000) + 100): (Date.now() / 1000) - TimeObject.fromObject(timeSpan['until']).getTotalSeconds();
+        let intervals = this.store.getAllTrackingIntervals()
+            .filter((interval: TrackingInterval) => {
+                return (sinceSeconds <= interval.startTimeSeconds)
+                    || ((interval.startTimeSeconds < sinceSeconds)
+                        && ((sinceSeconds < interval.endTimeSeconds) || (interval.getTrackingState() === TrackingState.ACTIVE))
+                    )
+            })
+            .filter((interval: TrackingInterval) => {
+                return interval.startTimeSeconds <= untilSeconds
+            })
+        let selectedIntervalsMap: Map<uuidv4, uuidv4[]> = new Map();
+        let trackableIds: uuidv4[] = intervals.map((interval: TrackingInterval) => {
+            let trackableId = this.store.getCorrespondingTrackableOfInterval(interval.getId());
+            if (!selectedIntervalsMap.has(trackableId)) {
+                selectedIntervalsMap.set(trackableId, [interval.getId()])
+            } else {
+                selectedIntervalsMap.get(trackableId).push(interval.getId());
+            }
+            return trackableId;
+        });
+        return [...(new Set(trackableIds).values())].map((id: uuidv4) => {
+            const trackable = this.store.getTrackableById(id);
+            return {
+                id: trackable.getId(),
+                name: trackable.getName(),
+                color: trackable.getColor(),
+                type: trackable.getType(),
+                trackablesIds: trackable.getType().toLowerCase() === 'project' ? (trackable as Project).getTrackablesIds() : [],
+                trackingHistory: trackable.getType().toLowerCase() === 'activity' ? (trackable as Activity).getTrackingHistoryIds() : []
+            }
+        });
+    }
     getAnalyzedTrackablesWithinTimeSpan(timeSpan: TimeSpan): AnalyzedTrackableAPI[] {
         const activities = this.store.getActivities();
         const projects = this.store.getProjects();
@@ -269,43 +317,45 @@ export class TrackableController implements ITrackableController {
     toTrackableObject(trackable: ITrackable): Object {
         return trackable.toObject();
     }
-    getTrackablesIdsWithinTimeSpan(timeSpan: Object): Object[] {
+    getTrackablesWithinTimeSpan(timeSpan: TimeSpan): TrackableAPI[] {
+        let trackables: ITrackable[] = [];
         if (typeof(timeSpan) !== 'object' || timeSpan === null) {
-            return this.store.getAllTrackableIds().map((id: uuidv4) => this.store.getTrackableById(id));
+            trackables = this.store.getAllTrackableIds().map((id: uuidv4) => this.store.getTrackableById(id));
         }
-        let sinceSeconds = (typeof(timeSpan['since']) === 'undefined') || timeSpan['since'] === null ? 0 : (Date.now() / 1000) - TimeObject.fromObject(timeSpan['since']).getTotalSeconds();
-        let untilSeconds = (typeof(timeSpan['until']) === 'undefined') || timeSpan['until'] === null ? ((Date.now() / 1000) + 100): (Date.now() / 1000) - TimeObject.fromObject(timeSpan['until']).getTotalSeconds();
-        let intervals = this.store.getAllTrackingIntervals()
-            .filter((interval: TrackingInterval) => {
-                return (sinceSeconds <= interval.startTimeSeconds)
-                    || ((interval.startTimeSeconds < sinceSeconds)
-                        && ((sinceSeconds < interval.endTimeSeconds) || (interval.getTrackingState() === TrackingState.ACTIVE))
-                    )
-            })
-            .filter((interval: TrackingInterval) => {
-                return interval.startTimeSeconds <= untilSeconds
-            })
-        let selectedIntervalsMap: Map<uuidv4, uuidv4[]> = new Map();
-        let trackableIds: uuidv4[] = intervals.map((interval: TrackingInterval) => {
-            let trackableId = this.store.getCorrespondingTrackableOfInterval(interval.getId());
-            if (!selectedIntervalsMap.has(trackableId)) {
-                selectedIntervalsMap.set(trackableId, [interval.getId()])
-            } else {
-                selectedIntervalsMap.get(trackableId).push(interval.getId());
-            }
-            return trackableId;
-        });
-        return [...(new Set(trackableIds).values())].map((trackableId: uuidv4) => {
-            let returnObject = this.getBasicTrackableInfo(trackableId);
-            let selectedIntervals = selectedIntervalsMap.get(trackableId).map((id: uuidv4) => this.store.getTrackingInterval(id));
-            Object.assign(returnObject, {
-                'selectedIntervals': selectedIntervals,
-                'selectedTime': selectedIntervals
-                                .map((interval: TrackingInterval) => interval.toTimeObject())
-                                .reduce((prev: TimeObject, curr: TimeObject) => TimeObject.add(prev, curr))
-                                .toObject()
+        else {
+            let sinceSeconds = (typeof(timeSpan['since']) === 'undefined') || timeSpan['since'] === null ? 0 : (Date.now() / 1000) - TimeObject.fromObject(timeSpan['since']).getTotalSeconds();
+            let untilSeconds = (typeof(timeSpan['until']) === 'undefined') || timeSpan['until'] === null ? ((Date.now() / 1000) + 100): (Date.now() / 1000) - TimeObject.fromObject(timeSpan['until']).getTotalSeconds();
+            let intervals = this.store.getAllTrackingIntervals()
+                .filter((interval: TrackingInterval) => {
+                    return (sinceSeconds <= interval.startTimeSeconds)
+                        || ((interval.startTimeSeconds < sinceSeconds)
+                            && ((sinceSeconds < interval.endTimeSeconds) || (interval.getTrackingState() === TrackingState.ACTIVE))
+                        )
+                })
+                .filter((interval: TrackingInterval) => {
+                    return interval.startTimeSeconds <= untilSeconds
+                })
+            let selectedIntervalsMap: Map<uuidv4, uuidv4[]> = new Map();
+            let trackableIds: uuidv4[] = intervals.map((interval: TrackingInterval) => {
+                let trackableId = this.store.getCorrespondingTrackableOfInterval(interval.getId());
+                if (!selectedIntervalsMap.has(trackableId)) {
+                    selectedIntervalsMap.set(trackableId, [interval.getId()])
+                } else {
+                    selectedIntervalsMap.get(trackableId).push(interval.getId());
+                }
+                return trackableId;
             });
-            return returnObject;
+            trackables = [...(new Set(trackableIds).values())].map((trackableId: uuidv4) => this.store.getTrackableById(trackableId));
+        }
+        return trackables.map((trackable: ITrackable) => {
+            return {
+                id: trackable.getId(),
+                name: trackable.getName(),
+                color: trackable.getColor(),
+                type: trackable.getType(),
+                trackingHistory: trackable.getTrackingHistory().map(interval => interval.getId()),
+                trackablesIds: trackable.getType().toLowerCase() === 'project' ? (trackable as Project).getTrackables().map((trackable: ITrackable) => trackable.getId()) : []
+            }
         });
     }
 

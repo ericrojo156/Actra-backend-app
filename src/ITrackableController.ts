@@ -41,4 +41,5 @@ export default interface ITrackableController {
     convertProjectToActivity(id);
     setTrackingHistory(trackableId, intervals);
     getProjectTrackables(id: uuidv4): TrackableAPI[];
+    getTrackablesWithinTimeSpan(timeSpan: TimeSpan): TrackableAPI[]
 }
