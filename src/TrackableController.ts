@@ -37,17 +37,7 @@ export class TrackableController implements ITrackableController {
     }
     getTrackablesIdsWithinTimeSpan(timeSpan: Object): TrackableAPI[] {
         if (typeof(timeSpan) !== 'object' || timeSpan === null) {
-            return this.store.getAllTrackableIds().map((id: uuidv4) => {
-                const trackable = this.store.getTrackableById(id);
-                return {
-                    id: trackable.getId(),
-                    name: trackable.getName(),
-                    color: trackable.getColor(),
-                    type: trackable.getType(),
-                    trackablesIds: trackable.getType().toLowerCase() === 'project' ? (trackable as Project).getTrackablesIds() : [],
-                    trackingHistory: trackable.getType().toLowerCase() === 'activity' ? (trackable as Activity).getTrackingHistoryIds() : []
-                }
-            });
+            return this.store.getAllTrackableIds().map((id: uuidv4) => this.convertIdToTrackableAPI(id));
         }
         let sinceSeconds = (typeof(timeSpan['since']) === 'undefined') || timeSpan['since'] === null ? 0 : (Date.now() / 1000) - TimeObject.fromObject(timeSpan['since']).getTotalSeconds();
         let untilSeconds = (typeof(timeSpan['until']) === 'undefined') || timeSpan['until'] === null ? ((Date.now() / 1000) + 100): (Date.now() / 1000) - TimeObject.fromObject(timeSpan['until']).getTotalSeconds();
@@ -71,17 +61,7 @@ export class TrackableController implements ITrackableController {
             }
             return trackableId;
         });
-        return [...(new Set(trackableIds).values())].map((id: uuidv4) => {
-            const trackable = this.store.getTrackableById(id);
-            return {
-                id: trackable.getId(),
-                name: trackable.getName(),
-                color: trackable.getColor(),
-                type: trackable.getType(),
-                trackablesIds: trackable.getType().toLowerCase() === 'project' ? (trackable as Project).getTrackablesIds() : [],
-                trackingHistory: trackable.getType().toLowerCase() === 'activity' ? (trackable as Activity).getTrackingHistoryIds() : []
-            }
-        });
+        return [...(new Set(trackableIds).values())].map((id: uuidv4) => this.convertIdToTrackableAPI(id));
     }
     getAnalyzedTrackablesWithinTimeSpan(timeSpan: TimeSpan): AnalyzedTrackableAPI[] {
         const activities = this.store.getActivities();
@@ -90,14 +70,7 @@ export class TrackableController implements ITrackableController {
         const trackables: TrackableAPI[] = [...activities.values(), ...projects.values()]
             .map(trackable => {
                 totalTimeSeconds += this.store.getTotalTrackedTime(trackable.getId(), timeSpan, TimeFormat.S).getTotalSeconds();
-                return {
-                    id: trackable.getId(),
-                    type: trackable.getType(),
-                    name: trackable.getName(),
-                    color: trackable.getColor(),
-                    trackablesIds: trackable.getTrackingHistory().map(interval => interval.getId()),
-                    trackingHistory: trackable.getTrackingHistory().map(interval => interval.getId())
-                }
+                return this.convertToTrackableAPI(trackable);
             }
         );
         const analyzedTrackables = this.analyzeTrackables(trackables, timeSpan, totalTimeSeconds);
@@ -117,14 +90,7 @@ export class TrackableController implements ITrackableController {
     }
     public getProjectTrackables(id: uuidv4): TrackableAPI[] {
         return this.store.getProjects().get(id).getTrackables().map((trackable: ITrackable) => {
-            return {
-                id: trackable.getId(),
-                type: trackable.getType(),
-                name: trackable.getName(),
-                color: trackable.getColor(),
-                trackablesIds: trackable.getType() === 'project' ? [...(trackable as Project).trackables.values()] : undefined,
-                trackingHistory: trackable.getTrackingHistory().map((interval: TrackingInterval) => interval.getId())
-            }
+            return this.convertToTrackableAPI(trackable);
         });
     }
     public getCurrentlyActiveTrackableId() {
@@ -317,6 +283,20 @@ export class TrackableController implements ITrackableController {
     toTrackableObject(trackable: ITrackable): Object {
         return trackable.toObject();
     }
+    private convertIdToTrackableAPI(trackableId: uuidv4): TrackableAPI {
+        return this.convertToTrackableAPI(this.store.getTrackableById(trackableId));
+    }
+    private convertToTrackableAPI(trackable: ITrackable): TrackableAPI {
+        return {
+            id: trackable.getId(),
+            projectActivity: trackable.getType() === 'project' ? this.convertToTrackableAPI((trackable as Project).projectActivity) : null,
+            name: trackable.getName(),
+            color: trackable.getColor(),
+            type: trackable.getType(),
+            trackingHistory: trackable.getTrackingHistory().map(interval => interval.getId()),
+            trackablesIds: trackable.getType().toLowerCase() === 'project' ? (trackable as Project).getTrackables().map((trackable: ITrackable) => trackable.getId()) : []
+        };
+    }
     getTrackablesWithinTimeSpan(timeSpan: TimeSpan): TrackableAPI[] {
         let trackables: ITrackable[] = [];
         if (typeof(timeSpan) !== 'object' || timeSpan === null) {
@@ -347,16 +327,7 @@ export class TrackableController implements ITrackableController {
             });
             trackables = [...(new Set(trackableIds).values())].map((trackableId: uuidv4) => this.store.getTrackableById(trackableId));
         }
-        return trackables.map((trackable: ITrackable) => {
-            return {
-                id: trackable.getId(),
-                name: trackable.getName(),
-                color: trackable.getColor(),
-                type: trackable.getType(),
-                trackingHistory: trackable.getTrackingHistory().map(interval => interval.getId()),
-                trackablesIds: trackable.getType().toLowerCase() === 'project' ? (trackable as Project).getTrackables().map((trackable: ITrackable) => trackable.getId()) : []
-            }
-        });
+        return trackables.map((trackable: ITrackable) => this.convertToTrackableAPI(trackable));
     }
 
     // overTimeSpan is a time diff from the present to the start of the time frame

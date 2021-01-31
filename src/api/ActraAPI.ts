@@ -58,7 +58,8 @@ export interface TrackableAPI {
     name: string,
     color: RGBColor | null,
     trackablesIds: string[] | undefined,
-    trackingHistory: string[] | undefined
+    trackingHistory: string[] | undefined,
+    projectActivity: TrackableAPI | null
 }
 
 export interface AnalyzedTrackableAPI {
