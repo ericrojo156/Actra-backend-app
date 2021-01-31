@@ -25,7 +25,7 @@ export class TrackableController implements ITrackableController {
     }
     private analyzeTrackables(trackables: TrackableAPI[], timeSpan: TimeSpan, totalTrackedTimeSeconds: number): AnalyzedTrackableAPI[] {
         return trackables.map(trackable => {
-            const trackedTimeObject = this.store.getTotalTrackedTime(trackable.id, timeSpan, TimeFormat.S);
+            const trackedTimeObject = this.store.getTotalTrackedTime(trackable.id, timeSpan, TimeFormat.HMS);
             return {
                 name: trackable.name,
                 trackedTime: {hours: trackedTimeObject.getHours(), mins: trackedTimeObject.getMins(), seconds: trackedTimeObject.getSeconds()},
