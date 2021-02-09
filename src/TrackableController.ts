@@ -23,13 +23,17 @@ export class TrackableController implements ITrackableController {
         this.logger = logger;
         this.setCurrentlyActiveTrackableId(this.store.getCurrentlyActiveTrackableId());
     }
-    private analyzeTrackables(trackables: TrackableAPI[], timeSpan: TimeSpan, totalTrackedTimeSeconds: number): AnalyzedTrackableAPI[] {
+    private analyzeTrackables(trackables: TrackableAPI[], timeSpan: TimeSpan): AnalyzedTrackableAPI[] {
+        const totalSeconds = TimeObject.fromObject(timeSpan.since).getTotalSeconds() - TimeObject.fromObject(timeSpan.until).getTotalSeconds();
+        let totalTrackedSeconds = 0;
         return trackables.map(trackable => {
             const trackedTimeObject = this.store.getTotalTrackedTime(trackable.id, timeSpan, TimeFormat.HMS);
+            const trackableSeconds = trackedTimeObject.getTotalSeconds();
+            totalTrackedSeconds += trackableSeconds;
             return {
                 name: trackable.name,
                 trackedTime: {hours: trackedTimeObject.getHours(), mins: trackedTimeObject.getMins(), seconds: trackedTimeObject.getSeconds()},
-                percentOfTotalTime: 100 * (trackedTimeObject.getTotalSeconds() / totalTrackedTimeSeconds),
+                percentOfTotalTime: 100 * (trackableSeconds / totalSeconds),
                 visibleInChart: true,
                 displayColor: trackable.color
             }
@@ -66,14 +70,8 @@ export class TrackableController implements ITrackableController {
     getAnalyzedTrackablesWithinTimeSpan(timeSpan: TimeSpan): AnalyzedTrackableAPI[] {
         const activities = this.store.getActivities();
         const projects = this.store.getProjects();
-        let totalTimeSeconds = 0;
-        const trackables: TrackableAPI[] = [...activities.values(), ...projects.values()]
-            .map(trackable => {
-                totalTimeSeconds += this.store.getTotalTrackedTime(trackable.getId(), timeSpan, TimeFormat.S).getTotalSeconds();
-                return this.convertToTrackableAPI(trackable);
-            }
-        );
-        const analyzedTrackables = this.analyzeTrackables(trackables, timeSpan, totalTimeSeconds);
+        const trackables: TrackableAPI[] = [...activities.values(), ...projects.values()].map(trackable => this.convertToTrackableAPI(trackable));
+        const analyzedTrackables = this.analyzeTrackables(trackables, timeSpan);
         return analyzedTrackables;
     }
     public async getActivity(id: uuidv4): Promise<ActivityActraAPI> {
