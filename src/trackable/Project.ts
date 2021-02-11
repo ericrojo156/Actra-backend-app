@@ -6,6 +6,7 @@ import { TrackingInterval } from "./TrackingInterval";
 import { ITrackablesStore } from "../dataAccess/ITrackablesStore";
 import { TrackingState } from "./TrackingState";
 import { RGBColor } from "./RGBColor";
+import { TimeSpan } from "../api/ActraAPI";
 
 export class Project implements ITrackable {
     projectActivity: Activity;
@@ -125,10 +126,10 @@ export class Project implements ITrackable {
 
     // important: a project is tracked dynamically through its trackables, so that its total time is accurate after adding/removing
     // pre-existing trackables
-    getTotalTrackedTime(format: TimeFormat = TimeFormat.HMS, sinceTimeSeconds: number = null): TimeObject {
+    getTotalTrackedTime(format: TimeFormat = TimeFormat.HMS, overTimeSpan: TimeSpan = null): TimeObject {
         if (this.trackables.size > 0) {
             return [...this.trackables]
-                .map((trackableId: uuidv4) => this.getTrackable(trackableId).getTotalTrackedTime(format, sinceTimeSeconds))
+                .map((trackableId: uuidv4) => this.getTrackable(trackableId).getTotalTrackedTime(format, overTimeSpan))
                 .reduce((cumulativeSeconds: TimeObject, trackableTime: TimeObject) => {
                     return TimeObject.add(cumulativeSeconds, trackableTime, format);
                 });

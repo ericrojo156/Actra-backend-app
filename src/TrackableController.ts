@@ -330,7 +330,7 @@ export class TrackableController implements ITrackableController {
 
     // overTimeSpan is a time diff from the present to the start of the time frame
     // sinceTimeSeconds is the absolute time since epoch for the start of the time frame
-    getTotalTrackedTime(id: uuidv4, overTimeSpan: Object = null, format: TimeFormat = TimeFormat.HMS): Object {
+    getTotalTrackedTime(id: uuidv4, overTimeSpan: TimeSpan = null, format: TimeFormat = TimeFormat.HMS): Object {
         let returnObject: Object = this.getBasicTrackableInfo(id);
         returnObject['trackedTime'] = this.store.getTotalTrackedTime(id, overTimeSpan, format).toObject();
         return returnObject;

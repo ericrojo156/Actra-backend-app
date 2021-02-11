@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { ITrackable } from "../trackable/ITrackable";
 import { TimeFormat, TimeObject } from "../trackable/TimeObject";
 import { TrackingInterval } from "../trackable/TrackingInterval";
-import { TrackingIntervalAPI } from "../api/ActraAPI";
+import { TimeSpan, TrackingIntervalAPI } from "../api/ActraAPI";
 
 export class TrackablesStore implements ITrackablesStore {
     private trackingIntervals: Map<uuidv4, TrackingInterval>;
@@ -207,7 +207,7 @@ export class TrackablesStore implements ITrackablesStore {
         }
         return successfullyAdded;
     }
-    getTotalTrackedTime(id: uuidv4, overTimeSpan: Object, format: TimeFormat): TimeObject {
+    getTotalTrackedTime(id: uuidv4, overTimeSpan: TimeSpan, format: TimeFormat): TimeObject {
         return this.getTrackableById(id).getTotalTrackedTime(format, overTimeSpan);
     }
     getTrackingIntervals(trackableId: uuidv4): TrackingIntervalAPI[] {

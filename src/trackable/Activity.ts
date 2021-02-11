@@ -5,6 +5,7 @@ import {TimeObject, TimeFormat} from "./TimeObject";
 import {v4 as uuidv4} from "uuid";
 import { ITrackablesStore } from "../dataAccess/ITrackablesStore";
 import { RGBColor } from "./RGBColor";
+import { TimeSpan } from "../api/ActraAPI";
 
 export class Activity implements ITrackable {
     public trackingHistory: Set<uuidv4>;
@@ -132,11 +133,11 @@ export class Activity implements ITrackable {
     static extractTrackingHistory(store: ITrackablesStore, trackableObject: Object): Set<uuidv4> {
         return new Set(trackableObject['trackingHistory']) || new Set();
     }
-    getTotalTrackedTime(format: TimeFormat = TimeFormat.HMS, overTimeSpan: Object = null): TimeObject {
+    getTotalTrackedTime(format: TimeFormat = TimeFormat.HMS, overTimeSpan: TimeSpan = null): TimeObject {
         let sinceEpochSeconds = (Date.now() / 1000);
         let sinceTimeSeconds = null;
-        if (overTimeSpan !== null && typeof(overTimeSpan) === 'object' && Object.keys(overTimeSpan).length > 0) {
-            let overTimeSpanSeconds = TimeObject.fromObject(overTimeSpan).getTotalSeconds();
+        if (overTimeSpan && typeof(overTimeSpan) === 'object' && Object.keys(overTimeSpan).length > 0 && typeof(overTimeSpan.since) !== 'undefined') {
+            let overTimeSpanSeconds = TimeObject.fromObject(overTimeSpan.since).getTotalSeconds();
             sinceTimeSeconds = sinceEpochSeconds - overTimeSpanSeconds;
         }
         let trackingIntervalsList = this.getTrackingHistory();

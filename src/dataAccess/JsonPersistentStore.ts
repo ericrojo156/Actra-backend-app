@@ -13,7 +13,7 @@ import { FileSystemStorePersistence } from "./FileSystemStorePersistence";
 import { TimeFormat, TimeObject } from "../trackable/TimeObject";
 import { TrackingInterval } from "../trackable/TrackingInterval";
 import {Mutex} from 'async-mutex';
-import { TrackingIntervalAPI } from "../api/ActraAPI";
+import { TimeSpan, TrackingIntervalAPI } from "../api/ActraAPI";
 
 const latestStoreVersion: string = "v.0.3";
 const jsonPeristentStore: string = "JsonPersistentStore";
@@ -222,7 +222,7 @@ export class JsonPersistentStore implements IPersistentAndSerializableStore {
         }
         return JSON.stringify(trackableObject);           
     }
-    getTotalTrackedTime(id: uuidv4, overTimeSpan: Object = null, format: TimeFormat): TimeObject {
+    getTotalTrackedTime(id: uuidv4, overTimeSpan: TimeSpan = null, format: TimeFormat): TimeObject {
         return this.store.getTotalTrackedTime(id, overTimeSpan, format);
     }
     toObject(): Object {

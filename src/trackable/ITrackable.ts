@@ -4,6 +4,7 @@ import { TimeFormat, TimeObject } from "./TimeObject";
 import { ITrackablesStore } from "../dataAccess/ITrackablesStore";
 import { TrackingState } from "./TrackingState";
 import { RGBColor } from "./RGBColor";
+import { TimeSpan } from "../api/ActraAPI";
 
 export interface ITracker {
     getCurrentInterval(): TrackingInterval;
@@ -34,7 +35,7 @@ export interface ITrackable extends ITracker, IObservable {
     getColor(): RGBColor;
     setColor(color: RGBColor): void;
     getTrackable(id: uuidv4): ITrackable;
-    getTotalTrackedTime(format: TimeFormat, overTimeSpan: Object): TimeObject;
+    getTotalTrackedTime(format: TimeFormat, overTimeSpan: TimeSpan): TimeObject;
     setTrackingHistory(trackingHistory: TrackingInterval[]);
     toObject(): Object;
     getType(): string;

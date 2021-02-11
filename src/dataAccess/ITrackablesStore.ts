@@ -4,7 +4,7 @@ import {v4 as uuidv4} from "uuid";
 import { ITrackable } from "../trackable/ITrackable";
 import { TimeFormat, TimeObject } from "../trackable/TimeObject";
 import { TrackingInterval } from "../trackable/TrackingInterval";
-import { TrackingIntervalAPI } from "../api/ActraAPI";
+import { TimeSpan, TrackingIntervalAPI } from "../api/ActraAPI";
 
 export interface ITrackablesStore {
     getAllTrackingIntervals(): Array<TrackingInterval>;
@@ -18,7 +18,7 @@ export interface ITrackablesStore {
     getStoreType(): string;
     getActivities(): Map<uuidv4, Activity>;
     getProjects(): Map<uuidv4, Project>;
-    getTotalTrackedTime(id: uuidv4, overTimeSpan: Object, format: TimeFormat): TimeObject;
+    getTotalTrackedTime(id: uuidv4, overTimeSpan: TimeSpan, format: TimeFormat): TimeObject;
     setActivities(trackables: Array<Activity>);
     setProjects(trackables: Array<Project>);
     setTrackableName(trackableId: uuidv4, name: string): Promise<ITrackable>;

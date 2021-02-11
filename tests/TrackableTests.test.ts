@@ -234,21 +234,21 @@ describe("Activity", function() {
     });
     it("should accurately report total tracked time", async function() {
         let activity: Activity = controller.createAndReturnActivity("activity2");
-        let t1 = {'hours': 48};
-        let t2 = {'hours': 30};
-        let t3 = {'hours': 5};
-        let t4 = {'hours': 2};
-        let sevenDaysAgo = (Date.now() / 1000) - TimeObject.fromObject({"hours": 24 * 7}, TimeFormat.HMS).getTotalSeconds();
+        let t1 = {hours: 48};
+        let t2 = {hours: 30};
+        let t3 = {hours: 5};
+        let t4 = {hours: 2};
+        let sevenDaysAgo = (Date.now() / 1000) - TimeObject.fromObject({hours: 24 * 7}, TimeFormat.HMS).getTotalSeconds();
         let interval1 = TrackingInterval.fromObject({
             startTimeSeconds: sevenDaysAgo,
             endTimeSeconds: sevenDaysAgo + TimeObject.fromObject(t1, TimeFormat.HMS).getTotalSeconds()
         });
-        let threeDaysAgo = (Date.now() / 1000) - TimeObject.fromObject({'hours': 24 * 5}).getTotalSeconds();
+        let threeDaysAgo = (Date.now() / 1000) - TimeObject.fromObject({hours: 24 * 5}).getTotalSeconds();
         let interval2 = TrackingInterval.fromObject({
             startTimeSeconds: threeDaysAgo,
             endTimeSeconds: threeDaysAgo + TimeObject.fromObject(t2, TimeFormat.HMS).getTotalSeconds()
         });
-        let startOfToday = (Date.now() / 1000) - TimeObject.fromObject({'hours': 24}).getTotalSeconds();
+        let startOfToday = (Date.now() / 1000) - TimeObject.fromObject({hours: 24}).getTotalSeconds();
         let interval3 = TrackingInterval.fromObject({
             startTimeSeconds: startOfToday,
             endTimeSeconds: startOfToday + TimeObject.fromObject(t3, TimeFormat.HMS).getTotalSeconds()
@@ -262,16 +262,16 @@ describe("Activity", function() {
         [interval1, interval2, interval3, interval4].forEach(interval => {interval.setTrackingState(TrackingState.INACTIVE)});
         controller.setTrackingHistory(activity.getId(), [interval1, interval2, interval3, interval4]);
         let expectedTotalSecondsWithinOneHour = 3600;
-        let timeSpentWithinOneHour = TimeObject.fromObject(controller.getTotalTrackedTime(activity.getId(), {'hours': 1}).trackedTime);
+        let timeSpentWithinOneHour = TimeObject.fromObject(controller.getTotalTrackedTime(activity.getId(), {since: {hours: 1}}).trackedTime);
 
         let expectedTotalSecondsWithinOneDay = TimeObject.fromObject(t4).getTotalSeconds() + TimeObject.fromObject(t3).getTotalSeconds();
-        let timeSpentWithinOneDay = TimeObject.fromObject(controller.getTotalTrackedTime(activity.getId(), {'hours': 24}).trackedTime);
+        let timeSpentWithinOneDay = TimeObject.fromObject(controller.getTotalTrackedTime(activity.getId(), {since: {hours: 24}}).trackedTime);
 
         let expectedTotalSecondsWithinFiveDays = TimeObject.fromObject(t4).getTotalSeconds() + TimeObject.fromObject(t3).getTotalSeconds() + TimeObject.fromObject(t2).getTotalSeconds();
-        let timeSpentWithinFiveDays = TimeObject.fromObject(controller.getTotalTrackedTime(activity.getId(), {'hours': 24 * 5}).trackedTime);
+        let timeSpentWithinFiveDays = TimeObject.fromObject(controller.getTotalTrackedTime(activity.getId(), {since: {hours: 24 * 5}}).trackedTime);
 
         let expectedTotalSecondsWithinSixDaysAgo = (0.5 * TimeObject.fromObject(t1).getTotalSeconds()) + TimeObject.fromObject(t4).getTotalSeconds() + TimeObject.fromObject(t3).getTotalSeconds() + TimeObject.fromObject(t2).getTotalSeconds();
-        let timeSpentWithinSixDaysAgo = TimeObject.fromObject(controller.getTotalTrackedTime(activity.getId(), {'hours': 24 * 6}).trackedTime);
+        let timeSpentWithinSixDaysAgo = TimeObject.fromObject(controller.getTotalTrackedTime(activity.getId(), {since: {hours: 24 * 6}}).trackedTime);
 
         assert(numbersAreWithinAcceptablePrecision(timeSpentWithinOneHour.getTotalSeconds(), expectedTotalSecondsWithinOneHour, 2));
         assert(numbersAreWithinAcceptablePrecision(timeSpentWithinOneDay.getTotalSeconds(), expectedTotalSecondsWithinOneDay, 2));
@@ -559,13 +559,13 @@ describe("Project", function() {
         project.addTrackable(activity);
         controller.setTrackingHistory(activity.getId(), [interval1, interval2, interval3, interval4]);
         let expectedTotalSecondsWithinOneHour = 3600;
-        let timeSpentWithinOneHour = TimeObject.fromObject(controller.getTotalTrackedTime(project.getId(), {'hours': 1}).trackedTime);
+        let timeSpentWithinOneHour = TimeObject.fromObject(controller.getTotalTrackedTime(project.getId(), {since: {'hours': 1}}).trackedTime);
 
         let expectedTotalSecondsWithinOneDay = TimeObject.addMultiple(TimeObject.fromObject(t4), TimeObject.fromObject(t3));
-        let timeSpentWithinOneDay = TimeObject.fromObject(controller.getTotalTrackedTime(project.getId(), {'hours': 24}).trackedTime);
+        let timeSpentWithinOneDay = TimeObject.fromObject(controller.getTotalTrackedTime(project.getId(), {since: {'hours': 24}}).trackedTime);
 
         let expectedTotalSecondsWithinFiveDays = TimeObject.addMultiple(TimeObject.fromObject(t4), TimeObject.fromObject(t3), TimeObject.fromObject(t2));
-        let timeSpentWithinFiveDays = TimeObject.fromObject(controller.getTotalTrackedTime(project.getId(), {'hours': 24 * 5}).trackedTime);
+        let timeSpentWithinFiveDays = TimeObject.fromObject(controller.getTotalTrackedTime(project.getId(), {since: {'hours': 24 * 5}}).trackedTime);
 
         let expectedTotalSecondsWithinSixDaysAgo = TimeObject.addMultiple(
             new TimeObject((0.5 * TimeObject.fromObject(t1).getTotalSeconds())),
@@ -573,7 +573,7 @@ describe("Project", function() {
             TimeObject.fromObject(t3),
             TimeObject.fromObject(t2)
         );
-        let timeSpentWithinSixDaysAgo = TimeObject.fromObject(controller.getTotalTrackedTime(project.getId(), {'hours': 24 * 6}).trackedTime);
+        let timeSpentWithinSixDaysAgo = TimeObject.fromObject(controller.getTotalTrackedTime(project.getId(), {since: {'hours': 24 * 6}}).trackedTime);
         assert(numbersAreWithinAcceptablePrecision(timeSpentWithinOneHour.getTotalSeconds(), expectedTotalSecondsWithinOneHour, 2));
         assert(numbersAreWithinAcceptablePrecision(timeSpentWithinOneDay.getTotalSeconds(), expectedTotalSecondsWithinOneDay.getTotalSeconds(), 2));
         assert(numbersAreWithinAcceptablePrecision(timeSpentWithinFiveDays.getTotalSeconds(), expectedTotalSecondsWithinFiveDays.getTotalSeconds(), 2));
